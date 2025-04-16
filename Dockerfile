@@ -1,10 +1,10 @@
 # Use PHP Alpine with built-in extensions to avoid manual compilation
 FROM php:8.3-fpm-alpine
 
-RUN apk add sqlite-dev libzip-dev  icu-dev mysql-client
+RUN apk add sqlite-dev libzip-dev  icu-dev mysql-client mysql
 
 # Install PHP extensions using docker-php-ext-install
-RUN docker-php-ext-install pdo pdo_sqlite zip intl exif
+RUN docker-php-ext-install pdo pdo_sqlite pdo_mysql zip intl exif
 
 # Install Composer using a dedicated stage
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
