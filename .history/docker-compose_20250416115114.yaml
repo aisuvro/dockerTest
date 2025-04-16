@@ -1,0 +1,42 @@
+services:
+  app:
+    image: and-cart:v1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: and-cart-app-v1
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    env_file:
+      - .env.example
+    volumes:
+      - ./:/var/www/html
+      # - ./bootstrap/cache:/var/www/html/bootstrap/cache
+      # - ./storage:/var/www/html/storage
+    entrypoint: ["/var/www/html/docker-app-entrypoint.sh"]
+    networks:
+      - and-cart-network
+  
+  nginx:
+    image: nginx:stable-alpine
+    container_name: and-cart-nginx-v1
+    restart: unless-stopped
+    ports:
+      - "8092:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./bootstrap/cache:/var/www/html/bootstrap/cache
+      - ./storage:/var/www/html/storage
+      - ./public:/var/www/html/public
+      - ./docker-nginx-entrypoint.sh:/var/www/html/docker-nginx-entrypoint.sh
+    depends_on:
+      - app
+    entrypoint: ["/var/www/html/docker-nginx-entrypoint.sh"]
+    networks:
+      - and-cart-network
+
+
+networks:
+  and-cart-network:
+    driver: bridge
